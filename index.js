@@ -18,7 +18,7 @@ const fs = require('fs');
 
   var crawlUrl
   var grammars = []
-  for (let index = 11; index < 2700; index++) {
+  for (let index = 201; index < 500; index++) {
 
     crawlUrl = pageurl.replace('{index}', index)
     await page.goto(crawlUrl)
@@ -72,6 +72,10 @@ const fs = require('fs');
   
       // title 
       const gmwWrap = popupElement.querySelector('div.gmw-wrap')
+
+      if (gmwWrap == null) {
+        return grammar
+      }
   
       let grammarText = getContentFromChild(gmwWrap, 'p.gram')
   
@@ -82,6 +86,10 @@ const fs = require('fs');
       let detailExplain = getContentFromChild(popupElement, 'div.grd-div')
   
       let examplesElement = popupElement.querySelector('ul.grd-ul')
+
+      if (examplesElement == null) {
+        return grammar
+      }
   
       let examples = getExamples(examplesElement, 'li')
   
@@ -109,11 +117,20 @@ const fs = require('fs');
     await sleepFunction(15000);
   }
 
-  console.log('result', grammars)
+  // console.log('result', grammars)
 
-  fs.writeFile("grammars.json", JSON.stringify(grammars), function(err) {
-    if (err) throw err;
-    console.log('completed')
+  // fs.writeFile("grammars.json", JSON.stringify(grammars), function(err) {
+  //   if (err) throw err;
+  //   console.log('completed')
+  // })
+
+  fs.readFile('grammars.json', function (err, data) {
+    var json = JSON.parse(data)
+    json = json.concat(grammars)
+    fs.writeFile("grammars.json", JSON.stringify(json), function(err) {
+      if (err) throw err;
+      console.log('completed')
+    })
   })
 
   await browser.close();
