@@ -3,9 +3,6 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 
 (async () => {
-  const browser = await puppeteer.launch({headless: false});
-  const page = await browser.newPage();
-
   const pageurl = 'https://kantan.vn//grammar-{index}.htm'
 
   const sleepFunction =　async function sleep(t) {
@@ -18,10 +15,15 @@ const fs = require('fs');
 
   var crawlUrl
   var grammars = []
-  for (let index = 201; index < 500; index++) {
+  for (let index = 399; index < 405; index++) {
 
+    const browser = await puppeteer.launch({headless: false});
+    const page = await browser.newPage();
+    
     crawlUrl = pageurl.replace('{index}', index)
     await page.goto(crawlUrl)
+
+    page.waitForSelector('div.GrammarDetail')
 
     const getData = await page.evaluate(() => {
 
@@ -114,7 +116,9 @@ const fs = require('fs');
 
     grammars.push(result)
 
-    await sleepFunction(15000);
+    await sleepFunction(5000);
+
+    await browser.close();
   }
 
   // console.log('result', grammars)
@@ -133,5 +137,4 @@ const fs = require('fs');
     })
   })
 
-  await browser.close();
 })();
